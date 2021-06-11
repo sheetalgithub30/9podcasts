@@ -37,6 +37,8 @@ func main() {
 
 	api.POST("/categories", createCategory)
 	api.GET("/categories", getCategories)
+	api.POST("/keywords", createKeywords)
+	api.GET("/keywords", getKeywords)
 
 	api.HideBanner = true
 	api.Start(":9999")
