@@ -46,7 +46,7 @@ func getPodcast(c echo.Context) (err error) {
 
 	var pds []podcast
 
-	q := `SELECT category_id,title,description,website_address,category_id,languages,is_Explicit,cover_art_path,author_name,author_email,copyright,created_at,updated_at,published_at FROM podcasts`
+	q := `SELECT podcast_id,title,description,website_address,category_id,languages,is_Explicit,cover_art_path,author_name,author_email,copyright,created_at,updated_at,published_at FROM podcasts`
 
 	rows, err := db.Query(q)
 	if err != nil {
