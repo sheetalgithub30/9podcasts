@@ -37,12 +37,17 @@ func main() {
 
 	api.POST("/categories", createCategory)
 	api.GET("/categories", getCategories)
+
 	api.POST("/keywords", createKeywords)
 	api.GET("/keywords", getKeywords)
-	api.POST("/episodes", createEpisodes)
-	api.GET("/episodes", getEpisode)
+
 	api.POST("/podcasts", createPodcast)
 	api.GET("/podcasts", getPodcast)
+	api.GET("/podcasts/:id", getPodcastByID) // path parameters
+
+	api.POST("/episodes", createEpisodes)
+	api.GET("/episodes", getEpisodes) // query parameters
+
 	api.POST("/users", createUsers)
 	api.GET("/users", getUsers)
 
