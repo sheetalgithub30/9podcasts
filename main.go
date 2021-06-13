@@ -16,6 +16,12 @@ var (
 )
 
 func main() {
+
+	// setup upload directory
+	if _, err := os.Stat("uploads"); os.IsNotExist(err) {
+		os.Mkdir("uploads", 0755)
+	}
+
 	connectionString := os.Getenv("CONN")
 	if connectionString == "" {
 		log.Fatal("error getting connection string")
@@ -34,6 +40,9 @@ func main() {
 	api := echo.New()
 
 	api.GET("/", rootHandler)
+
+	api.POST("/uploads", uploadMedia)
+	api.GET("/media/*", getMediaFile)
 
 	api.POST("/categories", createCategory)
 	api.GET("/categories", getCategories)
