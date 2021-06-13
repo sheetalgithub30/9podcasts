@@ -19,7 +19,7 @@ type podcast struct {
 	Language       string    `json:"language"`
 	IsExplicit     bool      `json:"isExplicit"`
 	CoverArtID     int64     `json:"cover_art_id,omitempty"`
-	CoverArtPath   int64     `json:"cover_art_path,omitempty"`
+	CoverArt       Media     `json:"cover_art_path,omitempty"`
 	AuthorName     string    `json:"author_name"`
 	AuthorEmail    string    `json:"author_email"`
 	Copyright      string    `json:"copyright"`
@@ -76,6 +76,8 @@ func getPodcast(c echo.Context) (err error) {
 		if err != nil {
 			fmt.Println(err)
 		}
+
+		pd.CoverArt, _ = getMediaByID(pd.CoverArtID)
 
 		pds = append(pds, pd)
 	}
