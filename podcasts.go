@@ -117,5 +117,6 @@ func getPodcastByID(c echo.Context) (err error) {
 		fmt.Println(err)
 		return
 	}
+	pd.CoverArt, _ = getMediaByID(pd.CoverArtID)
 	return c.JSON(http.StatusOK, pd)
 }

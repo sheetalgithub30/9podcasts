@@ -17,16 +17,16 @@ type episode struct {
 	SeasonNo    int    `json:"season_no"`
 	EpisodeNo   int    `json:"episode_no"`
 	// 1 = Full | 2 = Bonus | 3 = trailer
-	TypeOfEpisode      int       `json:"type_of_episode"`
-	IsExplicit         bool      `json:"isExplicit"`
-	EpisodeArtID       int64     `json:"episode_art_id,omitempty"`
-	EpisodeArtPath     int64     `json:"episode_art_path,omitempty"`
-	EpisodeContentID   int64     `json:"episode_content_id,omitempty"`
-	EpisodeContentPath int64     `json:"episode_content_path,omitempty"`
-	Published          bool      `json:"published"`
-	PublishedAt        time.Time `json:"published_at,omitempty"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+	TypeOfEpisode    int       `json:"type_of_episode"`
+	IsExplicit       bool      `json:"isExplicit"`
+	EpisodeArtID     int64     `json:"episode_art_id,omitempty"`
+	EpisodeArt       Media     `json:"episode_art,omitempty"`
+	EpisodeContentID int64     `json:"episode_content_id,omitempty"`
+	EpisodeContent   Media     `json:"episode_content,omitempty"`
+	Published        bool      `json:"published"`
+	PublishedAt      time.Time `json:"published_at,omitempty"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 func createEpisodes(c echo.Context) (err error) {
@@ -100,7 +100,19 @@ func _getPodcastEpisodes(podcastID int64) (eps []episode, err error) {
 			fmt.Println(err)
 			continue
 		}
+		ep.EpisodeArt, err = getMediaByID(ep.EpisodeArtID)
 
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		ep.EpisodeContent, err = getMediaByID(ep.EpisodeContentID)
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
 		eps = append(eps, ep)
 	}
 	return eps, nil
