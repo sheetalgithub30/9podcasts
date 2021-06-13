@@ -20,7 +20,7 @@ func createCategory(c echo.Context) (err error) {
 		return
 	}
 
-	q := `INSERT INTO category (title) VALUES ($1) RETURNING category_id`
+	q := `INSERT INTO categories (title) VALUES ($1) RETURNING id`
 	err = db.QueryRow(q, ct.Title).Scan(&ct.ID)
 	if err != nil {
 		fmt.Println(err)
@@ -34,7 +34,7 @@ func getCategories(c echo.Context) (err error) {
 
 	var cts []Category
 
-	q := `SELECT category_id, title FROM category`
+	q := `SELECT id, title FROM categories`
 
 	rows, err := db.Query(q)
 	if err != nil {
