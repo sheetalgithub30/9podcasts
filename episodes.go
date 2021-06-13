@@ -51,7 +51,9 @@ func createEpisodes(c echo.Context) (err error) {
 			published, created_at, updated_at
 		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id
 	`
-	err = db.QueryRow(q, ep.PodcastID, ep.Title, ep.Description, ep.SeasonNo, ep.EpisodeNo, ep.TypeOfEpisode, ep.IsExplicit, ep.EpisodeArtID, ep.EpisodeContentID, ep.Published, ep.CreatedAt, ep.UpdatedAt).Scan(&ep.ID)
+	err = db.QueryRow(q, ep.PodcastID, ep.Title, ep.Description, ep.SeasonNo, ep.EpisodeNo,
+		ep.TypeOfEpisode, ep.IsExplicit, ep.EpisodeArtID, ep.EpisodeContentID, ep.Published,
+		ep.CreatedAt, ep.UpdatedAt).Scan(&ep.ID)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -90,7 +92,9 @@ func _getPodcastEpisodes(podcastID int64) (eps []episode, err error) {
 	for rows.Next() {
 		var ep episode
 
-		err = rows.Scan(&ep.ID, &ep.PodcastID, &ep.Title, &ep.Description, &ep.SeasonNo, &ep.EpisodeNo, &ep.TypeOfEpisode, &ep.IsExplicit, &ep.EpisodeArtID, &ep.EpisodeContentID, &ep.Published, &ep.CreatedAt, &ep.UpdatedAt)
+		err = rows.Scan(&ep.ID, &ep.PodcastID, &ep.Title, &ep.Description, &ep.SeasonNo,
+			&ep.EpisodeNo, &ep.TypeOfEpisode, &ep.IsExplicit, &ep.EpisodeArtID, &ep.EpisodeContentID,
+			&ep.Published, &ep.CreatedAt, &ep.UpdatedAt)
 
 		if err != nil {
 			fmt.Println(err)
