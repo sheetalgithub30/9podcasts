@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo"
 )
@@ -22,9 +23,8 @@ func createKeywords(k echo.Context) (err error) {
 	if kw.Item == "" {
 		return k.String(http.StatusBadRequest, "Item cannot be empty")
 	}
-
-	q := `INSERT INTO keywords (item) VALUES ($1) `
-	_, err = db.Exec(q, kw.Item)
+	q := `INSERT INTO keywords (item) VALUES ($1) ON CONFLICT (item) DO NOTHING `
+	_, err = db.Exec(q, strings.ToLower(kw.Item))
 	if err != nil {
 		fmt.Println(err)
 		return
