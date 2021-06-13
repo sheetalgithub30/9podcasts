@@ -39,6 +39,12 @@ func main() {
 	api.GET("/categories", getCategories)
 	api.POST("/keywords", createKeywords)
 	api.GET("/keywords", getKeywords)
+	api.POST("/episodes", createEpisodes)
+	api.GET("/episodes", getEpisode)
+	api.POST("/podcasts", createPodcast)
+	api.GET("/podcasts", getPodcast)
+	api.POST("/users", createUsers)
+	api.GET("/users", getUsers)
 
 	api.HideBanner = true
 	api.Start(":9999")
