@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
 	"text/template"
 	"time"
 )
@@ -22,12 +23,17 @@ func GenerateRSS(pd podcast) (*bytes.Buffer, error) {
 	return buf, err
 }
 
-func UpdateRSS() {
-
-}
-
-func GetPodcastDetails() {
-
+func WriteToFile(fileName string, data string) {
+	f, err := os.Create(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	n, err := f.WriteString(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(n, "bytes written successfully")
 }
 
 //sample testing
@@ -48,5 +54,6 @@ func main1() {
 	ed.IsExplicit = false
 	pd.Episodes = []episode{ed, ed, ed}
 	buf, _ := GenerateRSS(pd)
-	fmt.Println(buf.String())
+	str := buf.String()
+	WriteToFile("sample.rss", str)
 }
