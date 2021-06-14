@@ -5,32 +5,34 @@
     xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
   <channel>
     <atom:link href="http://localhost:9999/feed.rss" rel="self" type="application/rss+xml" />
-    <title>Dafna's Zebra Podcast</title>
-    <googleplay:owner>dafna@example.com</googleplay:owner>
+    <title>{{.Title}}</title>
+    <googleplay:owner>{{.AuthorEmail}}</googleplay:owner>
     <itunes:owner>
-      <itunes:email>dafna@example.com</itunes:email>
+      <itunes:email>{{.AuthorEmail}}</itunes:email>
     </itunes:owner>
-    <googleplay:author>Dafna</googleplay:author>
-    <itunes:author>Dafna</itunes:author>
-    <description>A pet-owner's guide to the popular striped equine.</description>
-    <googleplay:image href="https://www.example.com/podcasts/dafnas-zebras/img/dafna-zebra-pod-logo.jpg"/>
-    <itunes:image href="https://www.example.com/podcasts/dafnas-zebras/img/dafna-zebra-pod-logo.jpg"/>
-    <googleplay:category text="Art"/>
+    <googleplay:author>{{.AuthorName}}</googleplay:author>
+    <itunes:author>{{.AuthorName}}</itunes:author>
+    <description>{{.Description}}</description>
+    <googleplay:image href="CoverArtURL"/>
+    <itunes:image href="CoverArtURL"/>
+    <googleplay:category text="{{.Category}}"/>
     <!-- <itunes:category text="Art"/> -->
-    <googleplay:explicit>no</googleplay:explicit>
-    <itunes:explicit>no</itunes:explicit>
-    <language>en-us</language>
-    <link>https://www.example.com/podcasts/dafnas-zebras/</link>
+    <googleplay:explicit>{{.IsExplicit}}</googleplay:explicit>
+    <itunes:explicit>{{.IsExplicit}}</itunes:explicit>
+    <language>{{.Language}}</language>
+    <link>PodcastLink</link>
+    {{range .Episodes}}
     <item>
-      <title>Top 10 myths about caring for a zebra</title>
-      <description>Here are the top 10 misunderstandings about the care, feeding, and breeding of these lovable striped animals.</description>
-      <pubDate>Tue, 14 Mar 2017 12:00:00 GMT</pubDate>
-      <enclosure url="https://www.example.com/podcasts/dafnas-zebras/audio/toptenmyths.mp3"
-                 type="audio/mpeg" length="34216300"/>
-      <itunes:duration>30:00</itunes:duration>
-      <guid isPermaLink="false">dzpodtop10</guid>
-      <googleplay:explicit>no</googleplay:explicit>
-    <itunes:explicit>no</itunes:explicit>
+      <title>{{.Title}}</title>
+      <description>{{.Description}}</description>
+      <pubDate>{{.PublishedAt}}</pubDate>
+      <enclosure url="{EpisodeURL}"
+                 type="audio/mpeg" length="{Length}"/>
+      <itunes:duration>{Duration}</itunes:duration>
+      <guid isPermaLink="false">{GUID}</guid>
+      <googleplay:explicit>{{.IsExplicit}}</googleplay:explicit>
+    <itunes:explicit>{{.IsExplicit}}</itunes:explicit>
     </item>
+    {{end}}
   </channel>
 </rss>
