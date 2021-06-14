@@ -87,7 +87,6 @@ func getPodcast(c echo.Context) (err error) {
 
 		pds = append(pds, pd)
 	}
-
 	return c.JSON(http.StatusOK, pds)
 }
 
