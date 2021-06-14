@@ -17,9 +17,9 @@ type podcast struct {
 	CategoryID     int64     `json:"category_id,omitempty"`
 	Category       string    `json:"category,omitempty"`
 	Language       string    `json:"language"`
-	IsExplicit     bool      `json:"isExplicit"`
+	IsExplicit     bool      `json:"is_explicit"`
 	CoverArtID     int64     `json:"cover_art_id,omitempty"`
-	CoverArt       Media     `json:"cover_art_path,omitempty"`
+	CoverArt       Media     `json:"cover_art,omitempty"`
 	AuthorName     string    `json:"author_name"`
 	AuthorEmail    string    `json:"author_email"`
 	Copyright      string    `json:"copyright"`
@@ -62,8 +62,9 @@ func getPodcast(c echo.Context) (err error) {
 	var pds []podcast
 
 	q := `
-		SELECT id, title, description, website_address, category_id, language, is_explicit,
-		 cover_art_id, author_name, author_email,copyright, created_at, updated_at FROM podcasts
+		SELECT p.id, p.title, description, website_address, category_id, c.title, language, is_explicit,
+		 cover_art_id, author_name, author_email,copyright, created_at, updated_at FROM podcasts p
+		 JOIN categories c on c.id = p.category_id
 	`
 
 	rows, err := db.Query(q)
@@ -75,7 +76,7 @@ func getPodcast(c echo.Context) (err error) {
 	for rows.Next() {
 		var pd podcast
 
-		err = rows.Scan(&pd.ID, &pd.Title, &pd.Description, &pd.WebsiteAddress, &pd.CategoryID,
+		err = rows.Scan(&pd.ID, &pd.Title, &pd.Description, &pd.WebsiteAddress, &pd.CategoryID, &pd.Category,
 			&pd.Language, &pd.IsExplicit, &pd.CoverArtID, &pd.AuthorName, &pd.AuthorEmail, &pd.Copyright,
 			&pd.CreatedAt, &pd.UpdatedAt)
 		if err != nil {
@@ -99,13 +100,14 @@ func getPodcastByID(c echo.Context) (err error) {
 	}
 
 	q := `
-	SELECT id, title, description, website_address, category_id, language, is_explicit,
-	 cover_art_id, author_name, author_email,copyright, created_at,updated_at FROM podcasts
-	WHERE id = $1
+		SELECT p.id, p.title, description, website_address, category_id, c.title, language, is_explicit,
+		cover_art_id, author_name, author_email,copyright, created_at,updated_at FROM podcasts p
+		JOIN categories c on c.id = p.category_id
+		WHERE p.id = $1
 `
 	var pd podcast
 	err = db.QueryRow(q, id).Scan(&pd.ID, &pd.Title, &pd.Description, &pd.WebsiteAddress,
-		&pd.CategoryID, &pd.Language, &pd.IsExplicit, &pd.CoverArtID, &pd.AuthorName, &pd.AuthorEmail,
+		&pd.CategoryID, &pd.Category, &pd.Language, &pd.IsExplicit, &pd.CoverArtID, &pd.AuthorName, &pd.AuthorEmail,
 		&pd.Copyright, &pd.CreatedAt, &pd.UpdatedAt)
 	if err != nil {
 		fmt.Println(err)
