@@ -2,18 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
+	"github.com/apnishiksha/9podcasts/hash"
 	"github.com/labstack/echo"
 )
 
 type user struct {
-	ID         int64  `json:"id"`
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	Password   string `json:"password"`
-	Created_at string `json:"created_at"`
-	Updated_at string `json:"updated_at"`
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	Email      string    `json:"email"`
+	Password   string    `json:"password"`
+	Created_at time.Time `json:"created_at"`
+	Updated_at time.Time `json:"updated_at"`
 }
 
 func createUsers(c echo.Context) (err error) {
@@ -24,8 +27,18 @@ func createUsers(c echo.Context) (err error) {
 		return
 	}
 
+	hashedPassword, err := hash.GetHashedPassword(us.Password)
+	log.Println("hashedPassword= ", hashedPassword)
+	if err != nil {
+		log.Println("Error generating hashedPassword :", err)
+		return
+	}
+
+	us.Created_at = time.Now()
+	us.Updated_at = time.Now()
+
 	q := `INSERT INTO users(name,email,password,created_at,updated_at) VALUES($1,$2,$3,$4,$5) RETURNING id`
-	err = db.QueryRow(q, us.Name, us.Email, us.Password, us.Created_at, us.Updated_at).Scan(&us.ID)
+	err = db.QueryRow(q, us.Name, us.Email, hashedPassword, us.Created_at, us.Updated_at).Scan(&us.ID)
 	if err != nil {
 		fmt.Println(err)
 		return
