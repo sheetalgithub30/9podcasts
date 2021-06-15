@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"text/template"
 )
 
@@ -24,7 +25,7 @@ func (pd *podcast) GenerateRSS() (err error) {
 }
 
 func writeToFile(fileName string, data []byte) (err error) {
-	f, err := os.Create(fileName)
+	f, err := os.Create(filepath.Join("feeds", fileName))
 	if err != nil {
 		return
 	}

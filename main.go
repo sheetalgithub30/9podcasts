@@ -22,6 +22,10 @@ func main() {
 		os.Mkdir("uploads", 0755)
 	}
 
+	if _, err := os.Stat("feeds"); os.IsNotExist(err) {
+		os.Mkdir("feeds", 0755)
+	}
+
 	connectionString := os.Getenv("CONN")
 	if connectionString == "" {
 		log.Fatal("error getting connection string")
