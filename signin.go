@@ -30,7 +30,7 @@ func signIn(c echo.Context) (err error) {
 	// If an entry with the Email does not exist, send an "Unauthorized"(401) status
 	if err == sql.ErrNoRows {
 		log.Println(err)
-		return c.JSON(http.StatusUnauthorized, enteredCreds)
+		return c.NoContent(http.StatusUnauthorized)
 	}
 
 	// If the error is of any other type, send a 500 status
