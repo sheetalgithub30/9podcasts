@@ -61,10 +61,10 @@ func main() {
 	api.POST("/episodes", createEpisodes)
 	api.GET("/episodes", getEpisodes) // query parameters
 
-	api.POST("/users", createUsers)
-	api.GET("/users", getUsers)
+	api.POST("/register", createUser)
+	api.GET("/profile", getUser)
 
-	api.POST("/signin", SignIn)
+	api.POST("/signin", signIn)
 
 	api.HideBanner = true
 	api.Start(":9999")

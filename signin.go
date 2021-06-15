@@ -14,7 +14,7 @@ type Credentials struct {
 	Email    string `json:"Email"`
 }
 
-func SignIn(c echo.Context) (err error) {
+func signIn(c echo.Context) (err error) {
 	enteredCreds := &Credentials{}
 
 	if err = c.Bind(enteredCreds); err != nil {
@@ -46,5 +46,5 @@ func SignIn(c echo.Context) (err error) {
 		log.Println(err)
 		return
 	}
-	return c.JSON(http.StatusOK, enteredCreds)
+	return c.NoContent(http.StatusOK)
 }
