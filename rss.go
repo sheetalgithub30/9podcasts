@@ -3,57 +3,36 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"text/template"
-	"time"
 )
 
-func GenerateRSS(pd podcast) (*bytes.Buffer, error) {
+func (pd *podcast) GenerateRSS() (err error) {
 	buf := &bytes.Buffer{}
 	t := template.New("feed.rss")
 	tp, err := t.ParseFiles("feed.rss")
 	if err != nil {
-		log.Fatal("Error executing template :", err)
+		return
 	}
 	err = tp.Execute(buf, pd)
 	if err != nil {
-		log.Fatal("Execute error:", err)
+		return
 	}
-	return buf, err
+
+	err = writeToFile(pd.WebsiteAddress+".rss", buf.Bytes())
+	return
 }
 
-func WriteToFile(fileName string, data string) {
+func writeToFile(fileName string, data []byte) (err error) {
 	f, err := os.Create(fileName)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	defer f.Close()
-	n, err := f.WriteString(data)
+	_, err = f.Write(data)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
-	fmt.Println(n, "bytes written successfully")
-}
-
-//sample testing
-func main1() {
-	var pd podcast
-	pd.AuthorEmail = "hello@Gmail.com"
-	pd.AuthorName = "pk"
-	pd.Category = "art"
-	pd.Description = "this is podcast"
-	pd.Title = "hello"
-	pd.IsExplicit = false
-	pd.Language = "en"
-
-	var ed episode
-	ed.Title = "first episode"
-	ed.Description = "my first epidsode"
-	ed.PublishedAt = time.Now()
-	ed.IsExplicit = false
-	pd.Episodes = []episode{ed, ed, ed}
-	buf, _ := GenerateRSS(pd)
-	str := buf.String()
-	WriteToFile("sample.rss", str)
+	fmt.Println("RSS feed created successfully.")
+	return
 }

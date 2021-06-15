@@ -16,7 +16,6 @@
     <googleplay:image href="CoverArtURL"/>
     <itunes:image href="CoverArtURL"/>
     <googleplay:category text="{{.Category}}"/>
-    <!-- <itunes:category text="Art"/> -->
     <googleplay:explicit>{{.IsExplicit}}</googleplay:explicit>
     <itunes:explicit>{{.IsExplicit}}</itunes:explicit>
     <language>{{.Language}}</language>
@@ -26,12 +25,11 @@
       <title>{{.Title}}</title>
       <description>{{.Description}}</description>
       <pubDate>{{.PublishedAt}}</pubDate>
-      <enclosure url="{EpisodeURL}"
-                 type="audio/mpeg" length="{Length}"/>
+      <enclosure url="{EpisodeURL}" type="audio/mpeg" length="{Length}"/>
       <itunes:duration>{Duration}</itunes:duration>
       <guid isPermaLink="false">{GUID}</guid>
       <googleplay:explicit>{{.IsExplicit}}</googleplay:explicit>
-    <itunes:explicit>{{.IsExplicit}}</itunes:explicit>
+      <itunes:explicit>{{.IsExplicit}}</itunes:explicit>
     </item>
     {{end}}
   </channel>

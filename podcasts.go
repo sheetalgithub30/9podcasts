@@ -54,6 +54,11 @@ func createPodcast(c echo.Context) (err error) {
 		return
 	}
 
+	err = pd.GenerateRSS()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return c.JSON(http.StatusOK, pd)
 }
 
@@ -92,11 +97,22 @@ func getPodcast(c echo.Context) (err error) {
 
 func getPodcastByID(c echo.Context) (err error) {
 
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	pd, err := _getPodcastByID(id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	return c.JSON(http.StatusOK, pd)
+}
+
+func _getPodcastByID(podcastID int64) (pd podcast, err error) {
 
 	q := `
 		SELECT p.id, p.title, description, website_address, category_id, c.title, language, is_explicit,
@@ -104,20 +120,17 @@ func getPodcastByID(c echo.Context) (err error) {
 		JOIN categories c on c.id = p.category_id
 		WHERE p.id = $1
 `
-	var pd podcast
-	err = db.QueryRow(q, id).Scan(&pd.ID, &pd.Title, &pd.Description, &pd.WebsiteAddress,
+	err = db.QueryRow(q, podcastID).Scan(&pd.ID, &pd.Title, &pd.Description, &pd.WebsiteAddress,
 		&pd.CategoryID, &pd.Category, &pd.Language, &pd.IsExplicit, &pd.CoverArtID, &pd.AuthorName, &pd.AuthorEmail,
 		&pd.Copyright, &pd.CreatedAt, &pd.UpdatedAt)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 
 	pd.Episodes, err = _getPodcastEpisodes(pd.ID)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	pd.CoverArt, _ = getMediaByID(pd.CoverArtID)
-	return c.JSON(http.StatusOK, pd)
+	return
 }

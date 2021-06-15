@@ -59,6 +59,12 @@ func createEpisodes(c echo.Context) (err error) {
 		return
 	}
 
+	pd, _ := _getPodcastByID(ep.PodcastID)
+	err = pd.GenerateRSS()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return c.JSON(http.StatusOK, ep)
 }
 
