@@ -64,6 +64,8 @@ func main() {
 	api.POST("/users", createUsers)
 	api.GET("/users", getUsers)
 
+	api.POST("/signin", SignIn)
+
 	api.HideBanner = true
 	api.Start(":9999")
 }
