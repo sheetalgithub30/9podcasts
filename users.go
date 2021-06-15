@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/apnishiksha/9podcasts/hash"
+	"github.com/apnishiksha/9podcasts/auth"
 	"github.com/labstack/echo"
 )
 
@@ -27,7 +27,7 @@ func createUsers(c echo.Context) (err error) {
 		return
 	}
 
-	hashedPassword, err := hash.GetHashedPassword(us.Password)
+	hashedPassword, err := auth.GetHashedPassword(us.Password)
 	log.Println("hashedPassword= ", hashedPassword)
 	if err != nil {
 		log.Println("Error generating hashedPassword :", err)
