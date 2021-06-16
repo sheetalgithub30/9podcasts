@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
@@ -46,5 +47,18 @@ func signIn(c echo.Context) (err error) {
 		log.Println(err)
 		return
 	}
-	return c.NoContent(http.StatusOK)
+
+	SessionID, err := SetSessionID(enteredCreds.Email)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = "SessionID"
+	cookie.Value = SessionID
+	cookie.Expires = time.Now().Add(60 * time.Second)
+	c.SetCookie(cookie)
+
+	return c.String(http.StatusOK, SessionID)
 }
