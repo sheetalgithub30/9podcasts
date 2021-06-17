@@ -64,9 +64,14 @@ func main() {
 	api.GET("/episodes", getEpisodes) // query parameters
 	api.DELETE("/episodes/:id", deleteEpisodes)
 
-	api.POST("/users", createUsers)
-	api.GET("/users", getUsers)
+	api.POST("/users", createUser)
+	api.GET("/users", getUser)
 	api.DELETE("/users/:id", deleteUser)
+
+	api.POST("/register", createUser)
+	api.GET("/profile", getUser)
+
+	api.POST("/signin", signIn)
 
 	api.HideBanner = true
 	api.Start(":9999")

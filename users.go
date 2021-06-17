@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/apnishiksha/9podcasts/hash"
 	"github.com/labstack/echo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type user struct {
@@ -21,7 +21,7 @@ type user struct {
 	Updated_at time.Time `json:"updated_at"`
 }
 
-func createUsers(c echo.Context) (err error) {
+func createUser(c echo.Context) (err error) {
 
 	us := &user{}
 
@@ -29,8 +29,8 @@ func createUsers(c echo.Context) (err error) {
 		return
 	}
 
-	hashedPassword, err := hash.GetHashedPassword(us.Password)
-	log.Println("hashedPassword= ", hashedPassword)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(us.Password), bcrypt.DefaultCost)
+	log.Println("hashedPassword= ", string(hashedPassword))
 	if err != nil {
 		log.Println("Error generating hashedPassword :", err)
 		return
@@ -49,7 +49,7 @@ func createUsers(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, us)
 }
 
-func getUsers(c echo.Context) (err error) {
+func getUser(c echo.Context) (err error) {
 
 	var usr []user
 
