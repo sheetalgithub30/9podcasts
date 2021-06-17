@@ -80,13 +80,10 @@ func main() {
 	api.DELETE("/episodes/:id", deleteEpisode)
 	api.PUT("/episodes", updateEpisode)
 
-	api.POST("/users", createUser)
-	api.GET("/users", getUser)
-	api.DELETE("/users/:id", deleteUser)
-	api.PUT("/users", updateUser)
-
 	api.POST("/register", createUser)
 	api.GET("/profile", getUser)
+	api.DELETE("/users/:id", deleteUser)
+	api.PUT("/users", updateUser)
 
 	api.POST("/signin", signIn)
 
