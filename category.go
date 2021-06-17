@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-
 	"github.com/labstack/echo"
+	"net/http"
+	"strconv"
 )
 
 type Category struct {
@@ -54,4 +54,36 @@ func getCategories(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, cts)
+}
+func deleteCategories(c echo.Context) (err error) {
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	us, err := db.Exec(`Delete from categories where id = $1 `, id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	return c.JSON(http.StatusOK, us)
+}
+func updateCategories(c echo.Context) (err error) {
+	ct := &Category{}
+
+	if err = c.Bind(ct); err != nil {
+		return
+	}
+
+	q := `UPDATE categories SET title = $1 where id =$2`
+	_, err = db.Exec(q, ct.Title, ct.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, ct)
+
 }
