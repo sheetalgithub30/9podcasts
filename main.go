@@ -79,8 +79,8 @@ func main() {
 
 	api.POST("/signin", signIn)
 
-	api.GET("/dashboard", Dashboard)
-	api.GET("/refresh", refreshToken)
+	api.POST("/dashboard", Dashboard)
+	api.POST("/refresh", refreshToken)
 
 	api.HideBanner = true
 	api.Start(":9999")
