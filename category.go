@@ -71,3 +71,19 @@ func deleteCategories(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, us)
 }
+func updateCategories(c echo.Context) (err error) {
+	ct := &Category{}
+
+	if err = c.Bind(ct); err != nil {
+		return
+	}
+
+	q := `UPDATE categories SET title = $1 where id =$2`
+	_, err = db.Exec(q, ct.Title, ct.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, ct)
+
+}

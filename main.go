@@ -51,6 +51,7 @@ func main() {
 	api.POST("/categories", createCategory)
 	api.GET("/categories", getCategories)
 	api.DELETE("/categories/:id", deleteCategories)
+	api.PUT("/categories", updateCategories)
 
 	api.POST("/keywords", createKeywords)
 	api.GET("/keywords", getKeywords)
@@ -59,14 +60,17 @@ func main() {
 	api.GET("/podcasts", getPodcast)
 	api.GET("/podcasts/:id", getPodcastByID) // path parameters
 	api.DELETE("/podcasts/:id", deletePodcast)
+	api.PUT("/podcasts", updatePodcast)
 
 	api.POST("/episodes", createEpisodes)
 	api.GET("/episodes", getEpisodes) // query parameters
 	api.DELETE("/episodes/:id", deleteEpisodes)
+	api.PUT("/episodes", updateEpisodes)
 
 	api.POST("/users", createUser)
 	api.GET("/users", getUser)
 	api.DELETE("/users/:id", deleteUser)
+	api.PUT("/users", updateUser)
 
 	api.POST("/register", createUser)
 	api.GET("/profile", getUser)

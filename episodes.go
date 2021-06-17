@@ -139,3 +139,26 @@ func deleteEpisodes(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, us)
 }
+func updateEpisodes(c echo.Context) (err error) {
+	ep := &episode{}
+
+	ep.UpdatedAt = time.Now()
+
+	if err = c.Bind(ep); err != nil {
+		return
+	}
+
+	q := `UPDATE episodes SET title = $1 , description =$2, season_no=$3, episode_no =$4,
+	type_of_episode =$5, is_explicit =$6, episode_art_id =$7, episode_content_id =$8,
+	published =$9 WHERE id = $10`
+
+	_, err = db.Exec(q, ep.Title, ep.Description, ep.SeasonNo, ep.EpisodeNo, ep.TypeOfEpisode,
+		ep.IsExplicit, ep.EpisodeArtID, ep.EpisodeContentID, ep.Published, ep.ID)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, ep)
+
+}

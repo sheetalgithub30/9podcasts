@@ -55,6 +55,5 @@ func getKeywords(c echo.Context) (err error) {
 
 		kws = append(kws, kw)
 	}
-
 	return c.JSON(http.StatusOK, kws)
 }
