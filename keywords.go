@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/labstack/echo"
+	"net/http"
+
+	"strings"
 )
 
 type Keyword struct {

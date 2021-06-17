@@ -123,3 +123,19 @@ func _getPodcastEpisodes(podcastID int64) (eps []episode, err error) {
 	}
 	return eps, nil
 }
+func deleteEpisodes(c echo.Context) (err error) {
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	us, err := db.Exec(`Delete from episodes where id = $1 `, id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	return c.JSON(http.StatusOK, us)
+}

@@ -134,3 +134,19 @@ func _getPodcastByID(podcastID int64) (pd podcast, err error) {
 	pd.CoverArt, _ = getMediaByID(pd.CoverArtID)
 	return
 }
+func deletePodcast(c echo.Context) (err error) {
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	us, err := db.Exec(`Delete from podcasts where id = $1 `, id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	return c.JSON(http.StatusOK, us)
+}

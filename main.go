@@ -50,6 +50,7 @@ func main() {
 
 	api.POST("/categories", createCategory)
 	api.GET("/categories", getCategories)
+	api.DELETE("/categories/:id", deleteCategories)
 
 	api.POST("/keywords", createKeywords)
 	api.GET("/keywords", getKeywords)
@@ -57,12 +58,15 @@ func main() {
 	api.POST("/podcasts", createPodcast)
 	api.GET("/podcasts", getPodcast)
 	api.GET("/podcasts/:id", getPodcastByID) // path parameters
+	api.DELETE("/podcasts/:id", deletePodcast)
 
 	api.POST("/episodes", createEpisodes)
 	api.GET("/episodes", getEpisodes) // query parameters
+	api.DELETE("/episodes/:id", deleteEpisodes)
 
 	api.POST("/users", createUsers)
 	api.GET("/users", getUsers)
+	api.DELETE("/users/:id", deleteUser)
 
 	api.HideBanner = true
 	api.Start(":9999")

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	_ "os/exec"
+	"strconv"
 	"time"
 
 	"github.com/apnishiksha/9podcasts/hash"
@@ -71,4 +73,20 @@ func getUsers(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, usr)
+}
+func deleteUser(c echo.Context) (err error) {
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	us, err := db.Exec(`Delete from users where id = $1 `, id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	return c.JSON(http.StatusOK, us)
 }
