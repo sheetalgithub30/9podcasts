@@ -6,14 +6,25 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gomodule/redigo/redis"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/labstack/echo"
 )
 
 var (
-	db  *sql.DB
-	err error
+	db    *sql.DB
+	err   error
+	cache redis.Conn
 )
+
+func initCache() {
+	// Initialize the redis connection to a redis instance running on your local machine
+	cache, err = redis.DialURL("redis://localhost")
+	if err != nil {
+		log.Println("redis connection error")
+		log.Fatal(err)
+	}
+}
 
 func main() {
 
@@ -41,6 +52,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	initCache()
+
 	api := echo.New()
 
 	api.GET("/", rootHandler)
@@ -65,6 +78,9 @@ func main() {
 	api.GET("/profile", getUser)
 
 	api.POST("/signin", signIn)
+
+	api.GET("/dashboard", Dashboard)
+	api.GET("/refresh", refreshToken)
 
 	api.HideBanner = true
 	api.Start(":9999")

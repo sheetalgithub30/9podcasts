@@ -5,7 +5,7 @@ A self hosted platform for creating and hosting your podcasts
 
 To run this binary you need to set connection string for the postgres server
 
-### For Widnows Command prompt
+### For Windows Command prompt
 ```cmd
  set CONN=postgres://postgres:test@123@localhost:5432/9podcast?sslmode=disable
 ```
