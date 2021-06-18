@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	_ "os/exec"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo"
@@ -71,4 +73,44 @@ func getUser(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, usr)
+}
+func deleteUser(c echo.Context) (err error) {
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	us, err := db.Exec(`Delete from users where id = $1 `, id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	return c.JSON(http.StatusOK, us)
+}
+func updateUser(c echo.Context) (err error) {
+	us := &user{}
+
+	us.Updated_at = time.Now()
+
+	if err = c.Bind(us); err != nil {
+		return
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(us.Password), bcrypt.DefaultCost)
+	log.Println("hashedPassword= ", string(hashedPassword))
+	if err != nil {
+		log.Println("Error generating hashedPassword :", err)
+		return
+	}
+
+	q := `UPDATE users SET name = $1,email = $2 ,password=$3 where id =$4`
+	_, err = db.Exec(q, us.Name, us.Email, hashedPassword, us.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, us)
+
 }

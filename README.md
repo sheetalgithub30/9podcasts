@@ -8,6 +8,7 @@ To run this binary you need to set connection string for the postgres server
 ### For Widnows Command prompt
 ```cmd
  set CONN=postgres://postgres:test@123@localhost:5432/9podcast?sslmode=disable
+
 ```
 
 ### For Bash shell
