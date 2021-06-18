@@ -49,7 +49,7 @@ func createUser(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, us)
 }
 
-func getUser(c echo.Context) (err error) {
+func getUsers(c echo.Context) (err error) {
 
 	var usr []user
 
@@ -83,13 +83,13 @@ func deleteUser(c echo.Context) (err error) {
 		return
 	}
 
-	us, err := db.Exec(`Delete from users where id = $1 `, id)
+	_, err = db.Exec(`Delete from users where id = $1 `, id)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	return c.JSON(http.StatusOK, us)
+	return c.NoContent(http.StatusOK)
 }
 
 func updateUser(c echo.Context) (err error) {
@@ -101,7 +101,6 @@ func updateUser(c echo.Context) (err error) {
 		return
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(us.Password), bcrypt.DefaultCost)
-	log.Println("hashedPassword= ", string(hashedPassword))
 	if err != nil {
 		log.Println("Error generating hashedPassword :", err)
 		return

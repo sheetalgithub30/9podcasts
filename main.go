@@ -81,7 +81,7 @@ func main() {
 	api.PUT("/episodes", updateEpisode)
 
 	api.POST("/register", createUser)
-	api.GET("/profile", getUser)
+	api.GET("/profile", getUsers)
 	api.DELETE("/users/:id", deleteUser)
 	api.PUT("/users", updateUser)
 
