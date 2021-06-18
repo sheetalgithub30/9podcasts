@@ -123,3 +123,42 @@ func _getPodcastEpisodes(podcastID int64) (eps []episode, err error) {
 	}
 	return eps, nil
 }
+
+func deleteEpisode(c echo.Context) (err error) {
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	us, err := db.Exec(`Delete from episodes where id = $1 `, id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, us)
+}
+
+func updateEpisode(c echo.Context) (err error) {
+	ep := &episode{}
+
+	ep.UpdatedAt = time.Now()
+
+	if err = c.Bind(ep); err != nil {
+		return
+	}
+
+	q := `UPDATE episodes SET title = $1 , description =$2, season_no=$3, episode_no =$4,
+	type_of_episode =$5, is_explicit =$6, episode_art_id =$7, episode_content_id =$8,
+	,published =$9, updated_at=$10 WHERE id = $11`
+
+	_, err = db.Exec(q, ep.Title, ep.Description, ep.SeasonNo, ep.EpisodeNo, ep.TypeOfEpisode,
+		ep.IsExplicit, ep.EpisodeArtID, ep.EpisodeContentID, ep.Published, ep.UpdatedAt, ep.ID)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, ep)
+}

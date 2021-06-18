@@ -3,12 +3,12 @@ package main
 import (
 	"strconv"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 func SetSessionID(email string) (string, error) {
 	// Create a new random session token
-	uuid, _ := uuid.NewV4()
+	uuid, _ := uuid.NewUUID()
 	sessionID := uuid.String()
 	// Set the sessionID in the cache, along with the user whom it represents
 	// The sessionID has an expiry time in seconds

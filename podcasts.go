@@ -134,3 +134,39 @@ func _getPodcastByID(podcastID int64) (pd podcast, err error) {
 	pd.CoverArt, _ = getMediaByID(pd.CoverArtID)
 	return
 }
+
+func deletePodcast(c echo.Context) (err error) {
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	us, err := db.Exec(`Delete from podcasts where id = $1 `, id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, us)
+}
+
+func updatePodcast(c echo.Context) (err error) {
+	pd := &podcast{}
+
+	pd.UpdatedAt = time.Now()
+
+	if err = c.Bind(pd); err != nil {
+		return
+	}
+	q := `UPDATE podcasts SET title = $1, description= $2, website_address =$3, category_id = $4,language =$5,
+	 is_explicit =$6,cover_art_id = $7 , author_name =$8, author_email =$9 ,copyright =$10 ,updated_at=$11 where id =$12`
+
+	_, err = db.Exec(q, pd.Title, pd.Description, pd.WebsiteAddress, pd.CategoryID, pd.Language, pd.IsExplicit,
+		pd.CoverArtID, pd.AuthorName, pd.AuthorEmail, pd.Copyright, pd.UpdatedAt, pd.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.JSON(http.StatusOK, pd)
+}

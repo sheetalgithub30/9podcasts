@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo"
+
+	"strings"
 )
 
 type Keyword struct {
@@ -55,6 +56,5 @@ func getKeywords(c echo.Context) (err error) {
 
 		kws = append(kws, kw)
 	}
-
 	return c.JSON(http.StatusOK, kws)
 }
