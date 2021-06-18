@@ -6,14 +6,25 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gomodule/redigo/redis"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/labstack/echo"
 )
 
 var (
-	db  *sql.DB
-	err error
+	db    *sql.DB
+	err   error
+	cache redis.Conn
 )
+
+func initCache() {
+	// Initialize the redis connection to a redis instance running on your local machine
+	cache, err = redis.DialURL("redis://localhost")
+	if err != nil {
+		log.Println("redis connection error")
+		log.Fatal(err)
+	}
+}
 
 func main() {
 
@@ -41,6 +52,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	initCache()
+
 	api := echo.New()
 
 	api.GET("/", rootHandler)
@@ -50,8 +63,8 @@ func main() {
 
 	api.POST("/categories", createCategory)
 	api.GET("/categories", getCategories)
-	api.DELETE("/categories/:id", deleteCategories)
-	api.PUT("/categories", updateCategories)
+	api.DELETE("/categories/:id", deleteCategory)
+	api.PUT("/categories", updateCategory)
 
 	api.POST("/keywords", createKeywords)
 	api.GET("/keywords", getKeywords)
@@ -64,18 +77,18 @@ func main() {
 
 	api.POST("/episodes", createEpisodes)
 	api.GET("/episodes", getEpisodes) // query parameters
-	api.DELETE("/episodes/:id", deleteEpisodes)
-	api.PUT("/episodes", updateEpisodes)
+	api.DELETE("/episodes/:id", deleteEpisode)
+	api.PUT("/episodes", updateEpisode)
 
-	api.POST("/users", createUser)
-	api.GET("/users", getUser)
+	api.POST("/register", createUser)
+	api.GET("/profile", getUsers)
 	api.DELETE("/users/:id", deleteUser)
 	api.PUT("/users", updateUser)
 
-	api.POST("/register", createUser)
-	api.GET("/profile", getUser)
-
 	api.POST("/signin", signIn)
+
+	api.POST("/dashboard", Dashboard)
+	api.POST("/refresh", refreshToken)
 
 	api.HideBanner = true
 	api.Start(":9999")

@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/labstack/echo"
 	"net/http"
 	"strconv"
+
+	"github.com/labstack/echo"
 )
 
 type Category struct {
@@ -55,7 +56,8 @@ func getCategories(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, cts)
 }
-func deleteCategories(c echo.Context) (err error) {
+
+func deleteCategory(c echo.Context) (err error) {
 
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -68,10 +70,10 @@ func deleteCategories(c echo.Context) (err error) {
 		fmt.Println(err)
 		return
 	}
-
 	return c.JSON(http.StatusOK, us)
 }
-func updateCategories(c echo.Context) (err error) {
+
+func updateCategory(c echo.Context) (err error) {
 	ct := &Category{}
 
 	if err = c.Bind(ct); err != nil {
@@ -85,5 +87,4 @@ func updateCategories(c echo.Context) (err error) {
 		return
 	}
 	return c.JSON(http.StatusOK, ct)
-
 }

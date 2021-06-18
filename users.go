@@ -49,7 +49,7 @@ func createUser(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, us)
 }
 
-func getUser(c echo.Context) (err error) {
+func getUsers(c echo.Context) (err error) {
 
 	var usr []user
 
@@ -74,6 +74,7 @@ func getUser(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, usr)
 }
+
 func deleteUser(c echo.Context) (err error) {
 
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -82,14 +83,15 @@ func deleteUser(c echo.Context) (err error) {
 		return
 	}
 
-	us, err := db.Exec(`Delete from users where id = $1 `, id)
+	_, err = db.Exec(`Delete from users where id = $1 `, id)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	return c.JSON(http.StatusOK, us)
+	return c.NoContent(http.StatusOK)
 }
+
 func updateUser(c echo.Context) (err error) {
 	us := &user{}
 
@@ -99,18 +101,16 @@ func updateUser(c echo.Context) (err error) {
 		return
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(us.Password), bcrypt.DefaultCost)
-	log.Println("hashedPassword= ", string(hashedPassword))
 	if err != nil {
 		log.Println("Error generating hashedPassword :", err)
 		return
 	}
 
-	q := `UPDATE users SET name = $1,email = $2 ,password=$3 where id =$4`
-	_, err = db.Exec(q, us.Name, us.Email, hashedPassword, us.ID)
+	q := `UPDATE users SET name = $1,email = $2 ,password=$3 ,updated_at=$4 where id =$5`
+	_, err = db.Exec(q, us.Name, us.Email, hashedPassword, us.Updated_at, us.ID)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	return c.JSON(http.StatusOK, us)
-
 }

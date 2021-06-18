@@ -3,6 +3,7 @@ module github.com/apnishiksha/9podcasts
 go 1.13
 
 require (
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.0.0
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/labstack/echo v3.3.10+incompatible
