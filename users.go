@@ -30,7 +30,7 @@ func createUser(c echo.Context) (err error) {
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(us.Password), bcrypt.DefaultCost)
-	log.Println("hashedPassword= ", string(hashedPassword))
+	// log.Println("hashedPassword= ", string(hashedPassword))
 	if err != nil {
 		log.Println("Error generating hashedPassword :", err)
 		return
@@ -92,7 +92,41 @@ func deleteUser(c echo.Context) (err error) {
 	return c.NoContent(http.StatusOK)
 }
 
-func updateUser(c echo.Context) (err error) {
+func updateUserName(c echo.Context) (err error) {
+	us := &user{}
+
+	us.Updated_at = time.Now()
+
+	if err = c.Bind(us); err != nil {
+		return
+	}
+	q := `UPDATE users SET name = $1, updated_at=$2 where id =$3`
+	_, err = db.Exec(q, us.Name, us.Updated_at, us.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.String(http.StatusOK, "Name updated successfully")
+}
+
+func updateUserEmail(c echo.Context) (err error) {
+	us := &user{}
+
+	us.Updated_at = time.Now()
+
+	if err = c.Bind(us); err != nil {
+		return
+	}
+	q := `UPDATE users SET email = $1, updated_at=$2 where id =$3`
+	_, err = db.Exec(q, us.Email, us.Updated_at, us.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return c.String(http.StatusOK, "Email updated successfully")
+}
+
+func updateUserPassword(c echo.Context) (err error) {
 	us := &user{}
 
 	us.Updated_at = time.Now()
@@ -105,12 +139,11 @@ func updateUser(c echo.Context) (err error) {
 		log.Println("Error generating hashedPassword :", err)
 		return
 	}
-
-	q := `UPDATE users SET name = $1,email = $2 ,password=$3 ,updated_at=$4 where id =$5`
-	_, err = db.Exec(q, us.Name, us.Email, hashedPassword, us.Updated_at, us.ID)
+	q := `UPDATE users SET password = $1, updated_at=$2 where id =$3`
+	_, err = db.Exec(q, hashedPassword, us.Updated_at, us.ID)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	return c.JSON(http.StatusOK, us)
+	return c.String(http.StatusOK, "Password updated successfully")
 }

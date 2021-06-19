@@ -12,7 +12,7 @@ import (
 
 type Credentials struct {
 	Password string `json:"password"`
-	Email    string `json:"Email"`
+	Email    string `json:"email"`
 }
 
 func signIn(c echo.Context) (err error) {
