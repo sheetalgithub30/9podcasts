@@ -149,6 +149,7 @@ func updateEpisode(c echo.Context) (err error) {
 		return
 	}
 
+
 	q := `UPDATE episodes SET title = COALESCE(NULLIF($1,''),title) ,
 	description = COALESCE(NULLIF($2,''),description), 
 	season_no= COALESCE(NULLIF($3,0),season_no), 
@@ -160,6 +161,7 @@ func updateEpisode(c echo.Context) (err error) {
 	published = COALESCE(NULLIF($9,false),published), 
 	updated_at=$10 
 	WHERE id = $11`
+
 
 	_, err = db.Exec(q, ep.Title, ep.Description, ep.SeasonNo, ep.EpisodeNo, ep.TypeOfEpisode,
 		ep.IsExplicit, ep.EpisodeArtID, ep.EpisodeContentID, ep.Published, ep.UpdatedAt, ep.ID)

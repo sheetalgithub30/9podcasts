@@ -159,6 +159,7 @@ func updatePodcast(c echo.Context) (err error) {
 	if err = c.Bind(pd); err != nil {
 		return
 	}
+
 	q := `UPDATE podcasts SET title = COALESCE(NULLIF($1,''),title) ,
 	 description=  COALESCE(NULLIF($2,''),description),
 	 website_address =COALESCE(NULLIF($3,''),website_address) ,
@@ -171,6 +172,7 @@ func updatePodcast(c echo.Context) (err error) {
 	 copyright = COALESCE(NULLIF($10,''),copyright),
 	 updated_at= $11
 	 where id =$12;`
+	 
 
 	_, err = db.Exec(q, pd.Title, pd.Description, pd.WebsiteAddress, pd.CategoryID, pd.Language, pd.IsExplicit,
 		pd.CoverArtID, pd.AuthorName, pd.AuthorEmail, pd.Copyright, pd.UpdatedAt, pd.ID)
