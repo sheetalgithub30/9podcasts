@@ -6,7 +6,7 @@ const NoPodcast = () => {
     <Row justify="center" align="middle" style={{ height: "500px" }}>
       <Col>
         <p>You do not have any podcasts.</p>
-        <Button type="primary">Create a new podcast</Button>
+        <Button type="primary" >Create a new podcast</Button>
       </Col>
     </Row>
   );
