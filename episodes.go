@@ -168,5 +168,5 @@ func updateEpisode(c echo.Context) (err error) {
 		fmt.Println(err)
 		return
 	}
-	return c.JSON(http.StatusOK, ep)
+	return c.String(http.StatusOK, "episode updated successfully")
 }
