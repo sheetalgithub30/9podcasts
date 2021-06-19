@@ -93,6 +93,9 @@ func main() {
 	api.POST("/dashboard", Dashboard)
 	api.POST("/refresh", refreshToken)
 
+	api.GET("/forgot", ForgotPassword)
+	api.GET("/resetpass", ResetPassword)
+
 	api.HideBanner = true
 	api.Start(":9999")
 }

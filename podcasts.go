@@ -172,7 +172,6 @@ func updatePodcast(c echo.Context) (err error) {
 	 copyright = COALESCE(NULLIF($10,''),copyright),
 	 updated_at= $11
 	 where id =$12;`
-	 
 
 	_, err = db.Exec(q, pd.Title, pd.Description, pd.WebsiteAddress, pd.CategoryID, pd.Language, pd.IsExplicit,
 		pd.CoverArtID, pd.AuthorName, pd.AuthorEmail, pd.Copyright, pd.UpdatedAt, pd.ID)
