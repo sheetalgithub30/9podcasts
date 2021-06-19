@@ -149,7 +149,8 @@ func updateEpisode(c echo.Context) (err error) {
 		return
 	}
 
-	q := `UPDATE episodes SET title = $1 , description =$2, season_no=$3, episode_no =$4,
+	q := `UPDATE episodes SET title = $1 ,
+	 description =$2, season_no=$3, episode_no =$4,
 	type_of_episode =$5, is_explicit =$6, episode_art_id =$7, episode_content_id =$8,
 	,published =$9, updated_at=$10 WHERE id = $11`
 
