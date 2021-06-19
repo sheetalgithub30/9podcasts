@@ -83,7 +83,7 @@ func main() {
 	api.POST("/register", createUser)
 	api.GET("/profile", getUsers)
 	api.DELETE("/users/:id", deleteUser)
-	api.PUT("/users", updateUser)
+	api.PATCH("/users", updateUser)
 
 	api.POST("/signin", signIn)
 

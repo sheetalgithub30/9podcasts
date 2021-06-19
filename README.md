@@ -13,5 +13,6 @@ To run this binary you need to set connection string for the postgres server
 
 ### For Bash shell
 ```bash
- export CONN=postgres://postgres:test@123@localhost:5432/9podcast?sslmode=disable
+export CONN=postgres://postgres:test@123@localhost:5432/9podcast?sslmode=disable
+ 
 ```
