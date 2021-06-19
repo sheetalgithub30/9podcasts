@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/smtp"
+	"os"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -81,14 +83,13 @@ func ForgotPassword(c echo.Context) (err error) {
 		return
 	}
 
-	//To be implemented
-	SendMail()
-
+	// send email with generated link
+	err = SendEmail(email, link)
+	if err != nil {
+		log.Println("error sending email")
+		return
+	}
 	return c.String(http.StatusOK, link)
-}
-
-func SendMail() {
-
 }
 
 func ResetPassword(c echo.Context) (err error) {
@@ -110,5 +111,18 @@ func ResetPassword(c echo.Context) (err error) {
 		return c.NoContent(http.StatusUnauthorized)
 	}
 
-	return c.String(http.StatusOK, fmt.Sprintf("email associated with token= %s", email))
+	return c.String(http.StatusOK, fmt.Sprintf("%s", email))
+}
+
+func SendEmail(toEmail, link string) (err error) {
+	from := os.Getenv("EMAIL")
+	password := os.Getenv("EMAIL_PASSKEY")
+	toList := []string{toEmail}
+	host := "smtp.gmail.com"
+	port := "587"
+	msg := "Link to reset your Password : " + link
+	body := []byte(msg)
+	auth := smtp.PlainAuth("", from, password, host)
+	err = smtp.SendMail(host+":"+port, auth, from, toList, body)
+	return err
 }
