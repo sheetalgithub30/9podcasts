@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"log"
@@ -9,6 +10,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
@@ -17,6 +20,15 @@ import (
 type TokenCredentials struct {
 	Email string `json:"email"`
 	Token string `json:"token"`
+}
+
+type EmailData struct {
+	UserName        string
+	BrowserName     string
+	OperatingSystem string
+	ContactSupport  string
+	ActionUrl       string
+	Year            string
 }
 
 func GenerateToken(id int64, email string) (string, error) {
@@ -44,7 +56,7 @@ func GenerateLink(email string) (string, error) {
 
 	// If an entry with the email does not exist, send an "Unauthorized"(401) status
 	if err == sql.ErrNoRows {
-		log.Println(err)
+		log.Println("email doesn't exists ", err)
 		return "", err
 	}
 
@@ -128,13 +140,65 @@ func ResetPassword(c echo.Context) (err error) {
 	return c.String(http.StatusOK, fmt.Sprintf("%s", email))
 }
 
+func RenderTemplate(htmlFile string, ed EmailData) (*bytes.Buffer, error) {
+	buf := &bytes.Buffer{}
+	parsedTemplate, _ := template.ParseFiles(htmlFile)
+	err := parsedTemplate.Execute(buf, ed)
+	if err != nil {
+		log.Println("Error executing template :", err)
+	}
+	//fmt.Println(buf)
+	return buf, err
+}
+
+func GenerateEmail(link string, email string) (htmlStr string) {
+	var ed EmailData
+	ed.ActionUrl = link
+	ed.BrowserName = "Chrome"
+	ed.ContactSupport = "support@9podcast.com"
+	ed.OperatingSystem = "Linux"
+
+	result := db.QueryRow("SELECT name FROM users WHERE email=$1", email)
+	var uname string
+	unamePtr := &uname
+	err = result.Scan(unamePtr)
+
+	// If an entry with the email does not exist, send an "Unauthorized"(401) status
+	if err == sql.ErrNoRows {
+		log.Println("email doesn't exists ", err)
+		return
+	}
+
+	// If the error is of any other type, send a 500 status
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	ed.UserName = uname
+
+	currentTime := time.Now()
+	ed.Year = strconv.Itoa(currentTime.Year())
+
+	buf, err := RenderTemplate("./templates/reset_template.html", ed)
+	if err != nil {
+		log.Println("Error generating html file foe email", err)
+		return
+	}
+	htmlStr = buf.String()
+	return htmlStr
+}
+
 func SendEmail(toEmail, link string) (err error) {
+	htmlStr := GenerateEmail(link, toEmail)
 	from := os.Getenv("EMAIL")
 	password := os.Getenv("EMAIL_PASSKEY")
 	toList := []string{toEmail}
 	host := "smtp.gmail.com"
 	port := "587"
-	msg := "Link to reset your Password : " + link
+
+	// msg := "Link to reset your Password : " + link
+	msg := htmlStr
 	body := []byte(msg)
 	auth := smtp.PlainAuth("", from, password, host)
 	err = smtp.SendMail(host+":"+port, auth, from, toList, body)
