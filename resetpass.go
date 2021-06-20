@@ -8,6 +8,7 @@ import (
 	"net/smtp"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
@@ -18,10 +19,10 @@ type TokenCredentials struct {
 	Token string `json:"token"`
 }
 
-func GenerateToken(email string) (string, error) {
+func GenerateToken(id int64, email string) (string, error) {
 	// Create a new random session token
 	uuid, _ := uuid.NewUUID()
-	token := uuid.String()
+	token := "00" + strconv.FormatInt(id, 10) + "-" + uuid.String()
 	// Set the sessionID in the cache, along with the user whom it represents
 	// The sessionID has an expiry time in seconds
 	seconds := strconv.Itoa(60 * 10)
@@ -36,10 +37,10 @@ func DeleteToken(token string) error {
 }
 
 func GenerateLink(email string) (string, error) {
-	result := db.QueryRow("SELECT email FROM users WHERE email=$1", email)
-	temp := ""
-	tempPtr := &temp
-	err = result.Scan(tempPtr)
+	result := db.QueryRow("SELECT id FROM users WHERE email=$1", email)
+	var id int64
+	idPtr := &id
+	err = result.Scan(idPtr)
 
 	// If an entry with the email does not exist, send an "Unauthorized"(401) status
 	if err == sql.ErrNoRows {
@@ -54,7 +55,7 @@ func GenerateLink(email string) (string, error) {
 	}
 
 	//if email exists then send the link after generating token
-	token, err := GenerateToken(email)
+	token, err := GenerateToken(id, email)
 	if err != nil {
 		log.Println("error generating token")
 		return "", err
@@ -84,12 +85,14 @@ func ForgotPassword(c echo.Context) (err error) {
 	}
 
 	// send email with generated link
-	err = SendEmail(email, link)
+	// err = SendEmail(email, link)
+
 	if err != nil {
 		log.Println("error sending email")
 		return
 	}
-	return c.String(http.StatusOK, link)
+	log.Println("Email sent with link = " + link)
+	return c.String(http.StatusOK, "link sent successfully "+link)
 }
 
 func ResetPassword(c echo.Context) (err error) {
@@ -111,6 +114,17 @@ func ResetPassword(c echo.Context) (err error) {
 		return c.NoContent(http.StatusUnauthorized)
 	}
 
+	idSplitStr := strings.Split(token, "-")
+	idStr := idSplitStr[0]
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("id=", id)
+
+	// code to be written to redirect to change password webpage by and pass id as param
+	// return c.Redirect(http.StatusMovedPermanently, "/change_password/:"+idStr)
 	return c.String(http.StatusOK, fmt.Sprintf("%s", email))
 }
 
