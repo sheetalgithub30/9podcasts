@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/smtp"
+	"os"
 	"strconv"
 	"strings"
 	"text/template"
@@ -21,12 +23,10 @@ type TokenCredentials struct {
 }
 
 type EmailData struct {
-	UserName        string
-	BrowserName     string
-	OperatingSystem string
-	ContactSupport  string
-	ActionURL       string
-	Year            string
+	UserName       string
+	ContactSupport string
+	ActionURL      string
+	Year           string
 }
 
 func GenerateToken(id int64, email string) (string, error) {
@@ -35,8 +35,9 @@ func GenerateToken(id int64, email string) (string, error) {
 	token := "00" + strconv.FormatInt(id, 10) + "-" + uuid.String()
 	// Set the sessionID in the cache, along with the user whom it represents
 	// The sessionID has an expiry time in seconds
-	seconds := strconv.Itoa(60 * 10)
+	seconds := strconv.Itoa(60 * 15)
 	_, err = cache.Do("SETEX", token, seconds, email)
+	// log.Println("generated token=", token)
 	return token, err
 }
 
@@ -71,7 +72,7 @@ func GenerateLink(email string) (string, error) {
 		return "", err
 	}
 
-	domain := "http://localhost"
+	domain := "http://172.30.21.34:9999"
 	link := domain + "/resetpass?token=" + token
 	return link, err
 }
@@ -98,7 +99,7 @@ func ForgotPassword(c echo.Context) (err error) {
 	err = SendEmail(email, link)
 
 	if err != nil {
-		log.Println("error sending email")
+		log.Println("error sending email ", err)
 		return
 	}
 	log.Println("Email sent with link = " + link)
@@ -152,9 +153,7 @@ func RenderTemplate(htmlFile string, ed EmailData) (*bytes.Buffer, error) {
 func GenerateEmail(link string, email string) (htmlStr string) {
 	var ed EmailData
 	ed.ActionURL = link
-	ed.BrowserName = "Chrome"
 	ed.ContactSupport = "support@9podcast.com"
-	ed.OperatingSystem = "Linux"
 
 	result := db.QueryRow("SELECT name FROM users WHERE email=$1", email)
 	var uname string
@@ -189,17 +188,18 @@ func GenerateEmail(link string, email string) (htmlStr string) {
 
 func SendEmail(toEmail, link string) (err error) {
 	htmlStr := GenerateEmail(link, toEmail)
-	log.Println(htmlStr)
-	// from := os.Getenv("EMAIL")
-	// password := os.Getenv("EMAIL_PASSKEY")
-	// toList := []string{toEmail}
-	// host := "smtp.gmail.com"
-	// port := "587"
-	// subject := `Subject: Test email from Go!\n`
-	// mime := `MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n`
-	// body := htmlStr
-	// msg := []byte(subject + mime + body)
-	// auth := smtp.PlainAuth("", from, password, host)
-	// err = smtp.SendMail(host+":"+port, auth, from, toList, msg)
+	// log.Println(htmlStr)
+	from := os.Getenv("EMAIL")
+	password := os.Getenv("EMAIL_PASSKEY")
+	log.Println("e=", from, password)
+	toList := []string{toEmail}
+	host := "smtp.gmail.com"
+	port := "587"
+	subject := "Subject: Password reset request\n"
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	body := htmlStr
+	msg := []byte(subject + mime + body)
+	auth := smtp.PlainAuth("", from, password, host)
+	err = smtp.SendMail(host+":"+port, auth, from, toList, msg)
 	return err
 }
