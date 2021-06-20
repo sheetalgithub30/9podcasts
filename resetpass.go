@@ -92,7 +92,7 @@ func ForgotPassword(c echo.Context) (err error) {
 		return
 	}
 	log.Println("Email sent with link = " + link)
-	return c.String(http.StatusOK, "link sent successfully "+link)
+	return c.String(http.StatusOK, "link sent successfully ")
 }
 
 func ResetPassword(c echo.Context) (err error) {
