@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/smtp"
-	"os"
 	"strconv"
 	"strings"
 	"text/template"
@@ -27,7 +25,7 @@ type EmailData struct {
 	BrowserName     string
 	OperatingSystem string
 	ContactSupport  string
-	ActionUrl       string
+	ActionURL       string
 	Year            string
 }
 
@@ -97,7 +95,7 @@ func ForgotPassword(c echo.Context) (err error) {
 	}
 
 	// send email with generated link
-	// err = SendEmail(email, link)
+	err = SendEmail(email, link)
 
 	if err != nil {
 		log.Println("error sending email")
@@ -153,7 +151,7 @@ func RenderTemplate(htmlFile string, ed EmailData) (*bytes.Buffer, error) {
 
 func GenerateEmail(link string, email string) (htmlStr string) {
 	var ed EmailData
-	ed.ActionUrl = link
+	ed.ActionURL = link
 	ed.BrowserName = "Chrome"
 	ed.ContactSupport = "support@9podcast.com"
 	ed.OperatingSystem = "Linux"
@@ -182,7 +180,7 @@ func GenerateEmail(link string, email string) (htmlStr string) {
 
 	buf, err := RenderTemplate("./templates/reset_template.html", ed)
 	if err != nil {
-		log.Println("Error generating html file foe email", err)
+		log.Println("Error generating html file for email", err)
 		return
 	}
 	htmlStr = buf.String()
@@ -191,16 +189,17 @@ func GenerateEmail(link string, email string) (htmlStr string) {
 
 func SendEmail(toEmail, link string) (err error) {
 	htmlStr := GenerateEmail(link, toEmail)
-	from := os.Getenv("EMAIL")
-	password := os.Getenv("EMAIL_PASSKEY")
-	toList := []string{toEmail}
-	host := "smtp.gmail.com"
-	port := "587"
-
-	// msg := "Link to reset your Password : " + link
-	msg := htmlStr
-	body := []byte(msg)
-	auth := smtp.PlainAuth("", from, password, host)
-	err = smtp.SendMail(host+":"+port, auth, from, toList, body)
+	log.Println(htmlStr)
+	// from := os.Getenv("EMAIL")
+	// password := os.Getenv("EMAIL_PASSKEY")
+	// toList := []string{toEmail}
+	// host := "smtp.gmail.com"
+	// port := "587"
+	// subject := `Subject: Test email from Go!\n`
+	// mime := `MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n`
+	// body := htmlStr
+	// msg := []byte(subject + mime + body)
+	// auth := smtp.PlainAuth("", from, password, host)
+	// err = smtp.SendMail(host+":"+port, auth, from, toList, msg)
 	return err
 }
