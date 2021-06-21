@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset</title>
+</head>
+
+<body>
+    <form target="_self" method="POST" action="resetpass" onsubmit="getTokenValue()" >
+        Enter Password:
+        <br />
+        <input type="password" name="data" id="password" onchange='check_pass();' />
+        <br />
+        Confirm Password:
+        <br />
+        <input type="password" name="confirm_password" id="confirm_password" onchange='checkPass();' />
+        <br />
+        <input type="hidden" name="token" value="" id="token" />
+        <br />
+
+        <input type="submit" name="submit" value="submit" id="submit" disabled />
+    </form>
+    <script>
+        function checkPass() {
+            if (document.getElementById('password').value ==
+                document.getElementById('confirm_password').value) {
+                document.getElementById('submit').disabled = false;
+            } else {
+                document.getElementById('submit').disabled = true;
+            }
+        }
+
+        function getTokenValue(){
+            let params = new URLSearchParams(location.search);
+            let tokenValue=params.get('token')
+            document.getElementById('token').value=tokenValue;
+        }
+    </script>
+</body>
+
+</html>

@@ -134,16 +134,21 @@ func updateUserPassword(c echo.Context) (err error) {
 	if err = c.Bind(us); err != nil {
 		return
 	}
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(us.Password), bcrypt.DefaultCost)
+	ChangePassword(us.Password, us.ID, us.Updated_at)
+	return c.String(http.StatusOK, "Password updated successfully")
+}
+
+// this function is also used in Password reset
+func ChangePassword(pass string, id int64, updatedAt time.Time) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 	if err != nil {
 		log.Println("Error generating hashedPassword :", err)
 		return
 	}
 	q := `UPDATE users SET password = $1, updated_at=$2 where id =$3`
-	_, err = db.Exec(q, hashedPassword, us.Updated_at, us.ID)
+	_, err = db.Exec(q, hashedPassword, updatedAt, id)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	return c.String(http.StatusOK, "Password updated successfully")
 }
