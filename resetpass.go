@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"database/sql"
-	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -18,7 +18,7 @@ import (
 )
 
 type TokenCredentials struct {
-	Email string `json:"email"`
+	Data  string `json:"email"` //Data can be email or password in POST method
 	Token string `json:"token"`
 }
 
@@ -73,70 +73,8 @@ func GenerateLink(email string) (string, error) {
 	}
 
 	domain := "http://172.30.21.34:9999"
-	link := domain + "/resetpass?token=" + token
+	link := domain + "/resetpass_request?token=" + token
 	return link, err
-}
-
-func ForgotPassword(c echo.Context) (err error) {
-	enteredCreds := &TokenCredentials{}
-	if err = c.Bind(enteredCreds); err != nil {
-		return
-	}
-	email := enteredCreds.Email
-	log.Println("email=", email)
-	link, err := GenerateLink(email)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	if link == "" {
-		log.Println("Empty Link")
-		c.String(http.StatusOK, "Empty Link")
-		return
-	}
-
-	// send email with generated link
-	err = SendEmail(email, link)
-
-	if err != nil {
-		log.Println("error sending email ", err)
-		return
-	}
-	log.Println("Email sent with link = " + link)
-	return c.String(http.StatusOK, "link sent successfully ")
-}
-
-func ResetPassword(c echo.Context) (err error) {
-	enteredCreds := &TokenCredentials{}
-	if err = c.Bind(enteredCreds); err != nil {
-		return
-	}
-	token := enteredCreds.Token
-	log.Println("token=", token)
-
-	// We then get the email of the user from our cache, where we set the token
-	email, err := cache.Do("GET", token)
-	if err != nil {
-		// If there is an error fetching from cache, return an internal server error status
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	if email == nil {
-		// If the session token is not present in cache, return an unauthorized error
-		return c.NoContent(http.StatusUnauthorized)
-	}
-
-	idSplitStr := strings.Split(token, "-")
-	idStr := idSplitStr[0]
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	log.Println("id=", id)
-
-	// code to be written to redirect to change password webpage by and pass id as param
-	// return c.Redirect(http.StatusMovedPermanently, "/change_password/:"+idStr)
-	return c.String(http.StatusOK, fmt.Sprintf("%s", email))
 }
 
 func RenderTemplate(htmlFile string, ed EmailData) (*bytes.Buffer, error) {
@@ -191,7 +129,7 @@ func SendEmail(toEmail, link string) (err error) {
 	// log.Println(htmlStr)
 	from := os.Getenv("EMAIL")
 	password := os.Getenv("EMAIL_PASSKEY")
-	log.Println("e=", from, password)
+	// log.Println("e=", from)
 	toList := []string{toEmail}
 	host := "smtp.gmail.com"
 	port := "587"
@@ -202,4 +140,92 @@ func SendEmail(toEmail, link string) (err error) {
 	auth := smtp.PlainAuth("", from, password, host)
 	err = smtp.SendMail(host+":"+port, auth, from, toList, msg)
 	return err
+}
+
+func ForgotPassword(c echo.Context) (err error) {
+	enteredCreds := &TokenCredentials{}
+	if err = c.Bind(enteredCreds); err != nil {
+		return
+	}
+	email := enteredCreds.Data
+	log.Println("email=", email)
+	link, err := GenerateLink(email)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if link == "" {
+		log.Println("Empty Link")
+		c.String(http.StatusOK, "Empty Link")
+		return
+	}
+
+	// send email with generated link
+	err = SendEmail(email, link)
+
+	if err != nil {
+		log.Println("error sending email ", err)
+		return
+	}
+	log.Println("Email sent with link = " + link)
+	return c.String(http.StatusOK, "link sent successfully ")
+}
+
+func ResetPasswordRequest(c echo.Context) (err error) {
+	enteredCreds := &TokenCredentials{}
+	if err = c.Bind(enteredCreds); err != nil {
+		return
+	}
+	token := enteredCreds.Token
+	log.Println("token=", token)
+
+	// We then get the email of the user from our cache, where we set the token
+	email, err := cache.Do("GET", token)
+	if err != nil {
+		// If there is an error fetching from cache, return an internal server error status
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if email == nil {
+		// If the session token is not present in cache, return an unauthorized error
+		return c.String(http.StatusUnauthorized, "Password reset timed out.")
+	}
+
+	// code to be written to redirect to change password webpage by and pass id as param
+	// return c.Redirect(http.StatusSeeOther, "./templates/pass_entry.html")
+	// return c.String(http.StatusOK, fmt.Sprintf("%s", email))
+	htmlByte, err := ioutil.ReadFile("./templates/pass_entry.html")
+	if err != nil {
+		log.Println("error reading file", err)
+		return
+	}
+	htmlStr := string(htmlByte)
+	return c.HTML(http.StatusOK, htmlStr)
+}
+
+func ResetPassword(c echo.Context) (err error) {
+	enteredCreds := &TokenCredentials{}
+	if err = c.Bind(enteredCreds); err != nil {
+		return
+	}
+	token := enteredCreds.Token
+	pass := enteredCreds.Data
+	log.Println("token=", token)
+	log.Println("pass=", pass)
+	idSplitStr := strings.Split(token, "-")
+	idStr := idSplitStr[0]
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("id=", id)
+
+	updatedAt := time.Now()
+	ChangePassword(pass, id, updatedAt)
+	err = DeleteToken(enteredCreds.Token)
+	if err != nil {
+		log.Println("Error deleting reset token.")
+	}
+	log.Println("reset token deleted successfully.")
+	return c.String(http.StatusOK, "Password reset successfully")
 }

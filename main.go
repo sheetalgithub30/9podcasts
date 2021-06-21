@@ -86,7 +86,7 @@ func main() {
 
 	api.PATCH("/update_name", updateUserName)
 	api.PATCH("/update_email", updateUserEmail)
-	api.PATCH("/update_password", updateUserPassword)
+	api.POST("/update_password", updateUserPassword)
 
 	api.POST("/signin", signIn)
 
@@ -94,7 +94,8 @@ func main() {
 	api.POST("/refresh", refreshToken)
 
 	api.GET("/forgot", ForgotPassword)
-	api.GET("/resetpass", ResetPassword)
+	api.GET("/resetpass_request", ResetPasswordRequest)
+	api.POST("/resetpass", ResetPassword)
 
 	api.HideBanner = true
 	api.Start(":9999")
