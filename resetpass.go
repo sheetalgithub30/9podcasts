@@ -72,7 +72,7 @@ func GenerateLink(email string) (string, error) {
 		return "", err
 	}
 
-	domain := "http://172.30.21.34:9999"
+	domain := "http://172.30.17.67:9999"
 	link := domain + "/resetpass_request?token=" + token
 	return link, err
 }

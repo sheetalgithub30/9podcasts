@@ -15,7 +15,7 @@ func Dashboard(c echo.Context) error {
 	if err != nil {
 		if err == http.ErrNoCookie {
 			// If the cookie is not set, return an unauthorized status
-			log.Println("error getting cookie")
+			// log.Println("error getting cookie")
 			return c.NoContent(http.StatusUnauthorized)
 		}
 		// For any other type of error, return a bad request status
@@ -31,7 +31,7 @@ func Dashboard(c echo.Context) error {
 	}
 	if res == nil {
 		// If the session token is not present in cache, return an unauthorized error
-		log.Println("session token not in cache")
+		// log.Println("session token not in cache")
 		return c.NoContent(http.StatusUnauthorized)
 	}
 	return c.String(http.StatusOK, fmt.Sprintf("Welcome %s!", res))
@@ -42,7 +42,7 @@ func refreshToken(c echo.Context) error {
 	if err != nil {
 		if err == http.ErrNoCookie {
 			// If the cookie is not set, return an unauthorized status
-			log.Println("error getting cookie")
+			// log.Println("error getting cookie")
 			return c.NoContent(http.StatusUnauthorized)
 		}
 		// For any other type of error, return a bad request status
@@ -58,7 +58,7 @@ func refreshToken(c echo.Context) error {
 	}
 	if res == nil {
 		// If the session token is not present in cache, return an unauthorized error
-		log.Println("session token not in cache")
+		// log.Println("session token not in cache")
 		return c.NoContent(http.StatusUnauthorized)
 	}
 
