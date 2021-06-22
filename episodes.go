@@ -149,19 +149,10 @@ func updateEpisode(c echo.Context) (err error) {
 		return
 	}
 
-
-	q := `UPDATE episodes SET title = COALESCE(NULLIF($1,''),title) ,
-	description = COALESCE(NULLIF($2,''),description), 
-	season_no= COALESCE(NULLIF($3,0),season_no), 
-	episode_no = COALESCE(NULLIF($4,0),episode_no),
-	type_of_episode = COALESCE(NULLIF($5,0),type_of_episode),
-	is_explicit = COALESCE(NULLIF($6,false),is_explicit),
-	episode_art_id = COALESCE(NULLIF($7,0),episode_art_id),
-	episode_content_id = COALESCE(NULLIF($8,0),episode_content_id),
-	published = COALESCE(NULLIF($9,false),published), 
-	updated_at=$10 
-	WHERE id = $11`
-
+	q := `UPDATE episodes SET title = $1 ,
+	 description =$2, season_no=$3, episode_no =$4,
+	type_of_episode =$5, is_explicit =$6, episode_art_id =$7, episode_content_id =$8,
+	published =$9, updated_at=$10 WHERE id = $11`
 
 	_, err = db.Exec(q, ep.Title, ep.Description, ep.SeasonNo, ep.EpisodeNo, ep.TypeOfEpisode,
 		ep.IsExplicit, ep.EpisodeArtID, ep.EpisodeContentID, ep.Published, ep.UpdatedAt, ep.ID)
